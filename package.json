@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "motor model visualization based on threejs and dxf.",
   "scripts": {
+    "start": "npx vite",
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview"
 
   },
   "repository": {
@@ -19,10 +23,8 @@
   "devDependencies": {
     "vite": "latest"
   },
-  "peerDependencies": {
-    "three": "latest"
-  },
   "dependencies": {
-    "dxf-parser": "latest"
+    "dxf-parser": "latest",
+    "three": "latest"
   }
 }
