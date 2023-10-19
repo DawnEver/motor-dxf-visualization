@@ -5,19 +5,19 @@
   "scripts": {
     "start": "npx vite",
     "dev": "npx vite",
-    "build": "npx vite build;npx vite preview",
+    "build": "npx vite build",
     "preview": "npx vite preview"
 
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gdsestimating/three-dxf"
+    "url": "https://github.com/DawnEver/motor-dxf-visualization"
   },
   "bugs": {
-    "url": "https://github.com/gdsestimating/three-dxf/issues",
+    "url": "https://github.com/DawnEver/motor-dxf-visualization/issues",
     "email": "mingyangbao@hust.edu.cn"
   },
-  "homepage": "https://github.com/gdsestimating/three-dxf",
+  "homepage": "https://github.com/DawnEver/motor-dxf-visualization",
   "license": "MIT",
   "author": "Bennett",
   "devDependencies": {
