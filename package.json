@@ -1,0 +1,32 @@
+{
+  "name": "motor-dxf-visualization",
+  "version": "1.0.0",
+  "description": "motor model visualization based on threejs and dxf.",
+  "scripts": {
+    "start": "npx vite",
+    "dev": "npx vite",
+    "build": "npx vite build;npx vite preview",
+    "preview": "npx vite preview"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gdsestimating/three-dxf"
+  },
+  "bugs": {
+    "url": "https://github.com/gdsestimating/three-dxf/issues",
+    "email": "mingyangbao@hust.edu.cn"
+  },
+  "homepage": "https://github.com/gdsestimating/three-dxf",
+  "license": "MIT",
+  "author": "Bennett",
+  "devDependencies": {
+    "vite": "latest"
+  },
+  "peerDependencies": {
+    "three": "latest"
+  },
+  "dependencies": {
+    "dxf-parser": "latest"
+  }
+}
