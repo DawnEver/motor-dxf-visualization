@@ -8,22 +8,58 @@ import { DxfParser } from "dxf-parser";
 
 import { getEntityGroups } from "./entity-group";
 
-// 添加按钮点击事件的监听器
-const importButton = document.getElementById("importButton");
-importButton.addEventListener("click", function () {
-  let fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = ".dxf"; // 只接受文本文件，可以根据需要更改
-  fileInput.addEventListener("change", importFile);
-  fileInput.click();
-});
+
+const gui = new GUI();
+const lightsFolder = gui.addFolder("Lights");
+const globalFolder = gui.addFolder('Global');
+
+let dxf_contents = null;
+
+// 导入文件的函数
+function importFile(event) {
+  const file = event.target.files[0];
+  reader.onload = function (e) {
+    dxf_contents = e.target.result;
+    // 在这里处理导入文件的逻辑
+    updateModel(dxf_contents);
+  };
+
+  reader.readAsText(file);
+}
+const controller = {
+  import: () => {
+    let fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".dxf"; // 只接受文本文件，可以根据需要更改
+    fileInput.addEventListener("change", importFile);
+    fileInput.click();
+  },
+  update: () => {
+    if (dxf_contents!=null){
+      updateModel(dxf_contents);
+    }else{
+      initText()
+    }
+  },
+  type: "LINE",
+}
+globalFolder.add(controller,"type",["MESH","LINE","POINT"])
+  .name("Model Type")
+  .onChange(controller.update);
+globalFolder.add(controller,"import").name("Import *.dxf");
+globalFolder.add(controller,"update").name("Update Model");
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const canvas = renderer.domElement;
+document.body.appendChild(canvas);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("white");
+
+
+
+// camera & control
 
 const fov = 75;
 const aspect = 2; // the canvas default
@@ -31,22 +67,18 @@ const near = 0.1;
 const far = 1000;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
-camera.position.set(60, 20, 100);
+const p_c_x=60, p_c_y=20, p_c_z=100;
+camera.position.set(p_c_x, p_c_y, p_c_z);
 camera.lookAt(0, 0, 0);
 
-const canvas = renderer.domElement;
 const controls = new OrbitControls(camera, canvas);
-
 controls.enablePan = true; // 是否开启右键拖拽
 controls.dampingFactor = 0.5; // 动态阻尼系数 就是鼠标拖拽旋转灵敏度，阻尼越小越灵敏
-
-controls.enableRotate = true;
 controls.autoRotate = true; // 是否自动旋转
-controls.autoRotateSpeed = 8.0;
-controls.rotateSpeed = 2.0;
+const autoRotateSpeed=5.0;
+controls.autoRotateSpeed = autoRotateSpeed;
 
-controls.target.set(0, 5, 0);
-controls.update();
+globalFolder.add(controls, "autoRotateSpeed", 0, 20).name("Rotate Speed");
 
 // 坐标系 平面
 // {
@@ -89,53 +121,15 @@ controls.update();
       this.object[this.prop].set(hexString);
     }
   }
-  class DegRadHelper {
-    constructor(obj, prop) {
-      this.obj = obj;
-      this.prop = prop;
-    }
-    get value() {
-      return THREE.MathUtils.radToDeg(this.obj[this.prop]);
-    }
-    set value(v) {
-      this.obj[this.prop] = THREE.MathUtils.degToRad(v);
-    }
-  }
-  function makeXYZGUI(gui, vector3, name, onChangeFn) {
-    const folder = gui.addFolder(name);
-    folder.add(vector3, "x", -100, 100).onChange(onChangeFn);
-    folder.add(vector3, "y", 0, 1000).onChange(onChangeFn);
-    folder.add(vector3, "z", -100, 100).onChange(onChangeFn);
-    folder.open();
-  }
+  const color = 0xf5f5f5;
+  const groundColor = 0xffe4c4;
+  const intensity = 5;
+  const light = new THREE.HemisphereLight(color, groundColor,intensity)
 
-  const color = 0xffffff;
-  const intensity = 10000;
-  const light = new THREE.SpotLight(color, intensity);
-  light.position.set(0, 100, 40);
-  light.target.position.set(0, 0, 0);
-  scene.add(light);
-  scene.add(light.target);
-
-  function updateLight() {
-    light.target.updateMatrixWorld();
-  }
-
-  updateLight();
-
-  const gui = new GUI();
-  gui.addColor(new ColorGUIHelper(light, "color"), "value").name("color");
-
-  gui.add(light, "intensity", 0, 10000, 1);
-  gui.add(light, "distance", 0, 1000).onChange(updateLight);
-  gui
-    .add(new DegRadHelper(light, "angle"), "value", 0, 90)
-    .name("angle")
-    .onChange(updateLight);
-  gui.add(light, "penumbra", 0, 1, 0.01);
-
-  makeXYZGUI(gui, light.position, "position", updateLight);
-  makeXYZGUI(gui, light.target.position, "target", updateLight);
+  scene.add(light)
+  lightsFolder.addColor(new ColorGUIHelper(light, "color"), "value").name("Sky Color");
+  lightsFolder.addColor(new ColorGUIHelper(light, "groundColor"), "value").name("Ground Color");
+  lightsFolder.add(light, "intensity", 0, 100, 1).name("Intensity");
 }
 let obj_list = [];
 
@@ -145,6 +139,7 @@ const parser = new DxfParser();
 
 
 // 开场
+function initText()
 {
   const textLoader = new FontLoader();
   //导入字体
@@ -172,17 +167,8 @@ const parser = new DxfParser();
     scene.add(model);
   })
 }
+initText()
 render();
-
-// const defaultURL = './models/fluid.dxf';
-// fetch(defaultURL)
-//     .then(response => response.text())
-//     .then(content => {
-//         updateModel(content)
-//     })
-//     .catch(error => {
-//         console.error('加载默认URL时发生错误：', error);
-//     });
 
 // 解析 dxf
 function updateModel(content) {
@@ -202,12 +188,12 @@ function updateModel(content) {
     bevelSize: 0,
     bevelSegments: 0,
     bevelEnabled: true,
-    depth: 5,
+    depth: 20,
     depthWrite: false,
     // curveSegments: 1,
     // steps: 5,
   };
-  let z_delta = 0.05;
+  let z_delta = 0;
   entity_groups.forEach((group) => {
     let shape = new THREE.Shape();
     group.entities.forEach((entity) => {
@@ -230,13 +216,19 @@ function updateModel(content) {
     let material = new THREE.MeshPhongMaterial({
       color: 0xffffff * Math.random(),
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.9,
     });
-    let model = new THREE.Mesh(geometry, material);
-    // let model = new THREE.LineSegments( geometry, material );
-    // let model = new THREE.Points( geometry, material );
+    let model;
+    if (controller.type == "MESH"){
+      model = new THREE.Mesh(geometry, material);
+    }else if (controller.type == "LINE"){
+      model = new THREE.LineSegments( geometry, material );
+    }else if (controller.type == "POINT"){
+      model = new THREE.Points( geometry, material );
+    }
+
     model.position.z = z_delta;
-    z_delta += z_delta;
+    z_delta += 0.05;
     obj_list.push(model);
     scene.add(model);
   });
@@ -264,14 +256,3 @@ function render() {
   requestAnimationFrame(render);
 }
 
-// 导入文件的函数
-function importFile(event) {
-  const file = event.target.files[0];
-  reader.onload = function (e) {
-    const contents = e.target.result;
-    // 在这里处理导入文件的逻辑
-    updateModel(contents);
-  };
-
-  reader.readAsText(file);
-}
