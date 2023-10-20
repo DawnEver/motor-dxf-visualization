@@ -32,8 +32,8 @@ class EntityGroup{
     }
 
     push_reversed_group(another_group){
-        var that_entities=[];
-        for (var entity of another_group.entities){
+        let that_entities=[];
+        for (let entity of another_group.entities){
             that_entities.unshift(reverseEntity(entity));
         }
         this.entities=this.entities.concat(that_entities)
@@ -42,8 +42,8 @@ class EntityGroup{
     }
 
     unshift_reversed_group(another_group){
-        var that_entities=[];
-        for (var entity of another_group.entities){
+        let that_entities=[];
+        for (let entity of another_group.entities){
             that_entities.unshift(reverseEntity(entity));
         }
         this.entities=[].concat(that_entities,this.entities);
@@ -80,7 +80,7 @@ function reverseEntity(entity){
 }
 
 export function getEntityGroups(dxf){
-    var temp_entity_groups=[];
+    let temp_entity_groups=[];
     dxf.entities.forEach(entity => {
         let entity_start_x,entity_start_y,entity_stop_x,entity_stop_y;
         
@@ -110,10 +110,10 @@ export function getEntityGroups(dxf){
         }
 
         // 默认 entity 无家可归
-        var homeless = true;
+        let homeless = true;
         // 进入 丑小鸭找妈妈 环节
-        for (var i=0;i <temp_entity_groups.length;i++){
-            var group=temp_entity_groups[i]
+        for (let i=0;i <temp_entity_groups.length;i++){
+            let group=temp_entity_groups[i]
             if (valueEqual(group.start_x,entity_stop_x) &&valueEqual(group.start_y,entity_stop_y)){
                 // group 头碰 entity 尾
                 // start -> stop
@@ -150,10 +150,10 @@ export function getEntityGroups(dxf){
 
     });
 
-    var merged_entity_groups=[];
+    let merged_entity_groups=[];
     temp_entity_groups.forEach(group => {
         // 默认 group 无家可归
-        var homeless = true;
+        let homeless = true;
         merged_entity_groups.forEach(merged_group =>{
             if (valueEqual(merged_group.stop_x,group.start_x) && valueEqual(merged_group.stop_y,group.start_y)){
                 // 头碰尾

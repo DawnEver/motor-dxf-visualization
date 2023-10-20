@@ -11,7 +11,7 @@ import { getEntityGroups } from "./entity-group";
 // 添加按钮点击事件的监听器
 const importButton = document.getElementById("importButton");
 importButton.addEventListener("click", function () {
-  var fileInput = document.createElement("input");
+  let fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = ".dxf"; // 只接受文本文件，可以根据需要更改
   fileInput.addEventListener("change", importFile);
@@ -137,10 +137,10 @@ controls.update();
   makeXYZGUI(gui, light.position, "position", updateLight);
   makeXYZGUI(gui, light.target.position, "target", updateLight);
 }
-var obj_list = [];
+let obj_list = [];
 
 const reader = new FileReader();
-var dxf;
+let dxf;
 const parser = new DxfParser();
 
 
@@ -162,12 +162,12 @@ const parser = new DxfParser();
         bevelOffset: 0,
         bevelSegments: 5,
       })
-    var material = new THREE.MeshPhongMaterial({
+    let material = new THREE.MeshPhongMaterial({
       color: 0xffffff * Math.random(),
       transparent: true,
       opacity: 0.8,
     });
-    var model = new THREE.Mesh(textGeometry, material)
+    let model = new THREE.Mesh(textGeometry, material)
     obj_list.push(model);
     scene.add(model);
   })
@@ -192,11 +192,11 @@ function updateModel(content) {
     return console.error(err.stack);
   }
 
-  var entity_groups = getEntityGroups(dxf);
+  let entity_groups = getEntityGroups(dxf);
 
   obj_list.forEach((obj) => scene.remove(obj));
 
-  var options = {
+  let options = {
     amount: 5,
     bevelThickness: 10,
     bevelSize: 0,
@@ -207,9 +207,9 @@ function updateModel(content) {
     // curveSegments: 1,
     // steps: 5,
   };
-  var z_delta = 0.05;
+  let z_delta = 0.05;
   entity_groups.forEach((group) => {
-    var shape = new THREE.Shape();
+    let shape = new THREE.Shape();
     group.entities.forEach((entity) => {
       if (entity.type == "LINE") {
         shape.moveTo(entity.vertices[0]["x"], entity.vertices[0]["y"]);
@@ -225,16 +225,16 @@ function updateModel(content) {
         );
       }
     });
-    // var geometry = new THREE.ShapeGeometry(shape);
-    var geometry = new THREE.ExtrudeGeometry(shape, options);
-    var material = new THREE.MeshPhongMaterial({
+    // let geometry = new THREE.ShapeGeometry(shape);
+    let geometry = new THREE.ExtrudeGeometry(shape, options);
+    let material = new THREE.MeshPhongMaterial({
       color: 0xffffff * Math.random(),
       transparent: true,
       opacity: 0.6,
     });
-    var model = new THREE.Mesh(geometry, material);
-    // var model = new THREE.LineSegments( geometry, material );
-    // var model = new THREE.Points( geometry, material );
+    let model = new THREE.Mesh(geometry, material);
+    // let model = new THREE.LineSegments( geometry, material );
+    // let model = new THREE.Points( geometry, material );
     model.position.z = z_delta;
     z_delta += z_delta;
     obj_list.push(model);
