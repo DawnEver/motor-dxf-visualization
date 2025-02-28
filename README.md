@@ -1,2 +1,2 @@
 # Motor-DXF-Visualization
-参考 [bmy.asia/motor_dxf_visualization](https://bmy.asia/motor_dxf_visualization)
+参考 [baomingyang.site/motor_dxf_visualization](https://www.baomingyang.site/motor_dxf_visualization)
